@@ -1,0 +1,25 @@
+body {
+    background-image: url(http://www.transparenttextures.com/patterns/food.png);
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+h1 {
+    font-size: 60px;
+    text-align: center;
+}
+
+h2 {
+    margin-top: 10px;
+}
+
+.flex-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+div[class="card"] {
+    margin-right: 10px;
+    margin-bottom: 20px;
+}
