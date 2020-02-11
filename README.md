@@ -11,9 +11,9 @@ This final project is carried out by Yusaf and Jade. This project focuses on the
 
 ## Planning
 On Friday 7th February 2020, we designed the UI of each page and the database schema.
-UI
-![schema](images/foodversity-diagram.png)
-Schema 
+**UI**
+![schema](images/foodversity-UI-design.png)
+**Schema** 
 ![schema](images/foodversity-schema.png)
 
 ## User Stories
