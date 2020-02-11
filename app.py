@@ -6,6 +6,7 @@ import json
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///recipes.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app) #initialized the database
 
 class Users(db.Model):
@@ -48,5 +49,13 @@ class Recipes(db.Model):
     def __repr__(self):
         return "%r" % self.recipe_id 
 
+@app.route('/')
+def home():
+    return render_template("homepage.html")
 
+@app.route('/signup')
+def signup():
+    return render_template("signup.html")
 
+if __name__ == "__main__":
+    app.run(debug=True)
