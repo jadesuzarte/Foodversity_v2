@@ -1,0 +1,26 @@
+@import url('https://fonts.googleapis.com/css?family=Dancing+Script&display=swap');
+
+body {
+    background-image: url(http://www.transparenttextures.com/patterns/food.png);
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+h1 {
+    font-size: 60px;
+    text-align: center;
+}
+
+span {
+    font-family: 'Dancing Script', cursive;
+}
+
+div {
+    width: fit-content;
+    margin: auto;
+}
+
+form input[type="text"] {
+    width: 500px;
+    margin-right: 5px;
+}
