@@ -49,5 +49,31 @@ class Recipes(db.Model):
     def __repr__(self):
         return "%r" % self.recipe_id 
 
+# Goes to the login page
+@app.route('/')
+def home():
+    return render_template("login.html")
+
+# Goes to the registration form
+@app.route('/signup')
+def signup():
+    return render_template("signup.html")
+
+# Goes to the profile page
+@app.route('/profile')
+def profile():
+    return render_template("profile.html")
+
+# Goes to a page that displays all recipes (based on the ingredients by the user)
+@app.route('/recipe_list', methods=["GET"])
+def recipe_list():
+    return render_template("recipe_list.html")
+
+@app.route('/get_recipes', methods=["GET"])
+def get_recipes():
+    ingredients = request.args.get('ingredients')
+    search = ','.join(ingredients.split(", "))
+    return redirect('/profile')
+
 if __name__ == "__main__":
     app.run(debug=True)
