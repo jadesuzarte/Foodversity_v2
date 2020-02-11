@@ -1,8 +1,11 @@
+import os
 import requests
 from flask import Flask, render_template, url_for, request, redirect, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 import json
+from dotenv import load_dotenv, find_dotenv
+load_dotenv()
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///recipes.db'
@@ -62,7 +65,7 @@ def signup():
 # Goes to the profile page
 @app.route('/profile')
 def profile():
-    return render_template("profile.html")
+    return render_template("user_profile.html")
 
 # Goes to a page that displays all recipes (based on the ingredients by the user)
 @app.route('/recipe_list', methods=["GET"])
@@ -72,8 +75,17 @@ def recipe_list():
 @app.route('/get_recipes', methods=["GET"])
 def get_recipes():
     ingredients = request.args.get('ingredients')
+    # Converting the search term into a format that's appropriate for the API call
     search = ','.join(ingredients.split(", "))
-    return redirect('/profile')
+    # My spoonacular api key
+    api_key = os.getenv("apikey")
+    # The http request to the spooner API
+    req = "https://api.spoonacular.com/recipes/findByIngredients?apiKey={apikey}&ingredients={ingredients}&number=8".format(apikey=api_key, ingredients=ingredients)
+    # Sending the request to the API
+    response = requests.get(req)
+    # The list of recipes
+    res_data = response.json()
+    return render_template('recipe_list.html', recipes=res_data)
 
 if __name__ == "__main__":
     app.run(debug=True)
