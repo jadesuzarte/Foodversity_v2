@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block head %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/profile.css') }}" type="text/css">
+{% endblock %}
+
+{% block body %}
+    <h1>Welcome to <span>Foodversity</span></h1>
+    <div>
+        <form action="#" method="POST">
+            <input type="text" name="ingredients" id="ingredients" placeholder="Write your ingredients here..."><input type="submit" value="Submit">
+        </form>
+    </div>
+{% endblock %}
