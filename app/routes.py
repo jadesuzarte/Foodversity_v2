@@ -78,6 +78,26 @@ def signup_page():
 
     return redirect("/signup")
 
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    error = None 
+    
+    if request.method == "GET":
+        return render_template("homepage.html")
+    if request.method == "POST":
+        username = request.form['username']
+        password = request.form['password']
+        existing_or_not_existing = Users.query.filter_by(username=username).first()
+
+        if existing_or_not_existing:
+            return render_template('user_profile.html')
+        else: 
+            error = 'User/password are incorrect or do not exist'
+            return error 
+    
+    return redirect("/")
+
+
 # Goes to the profile page
 @app.route('/profile')
 def profile():
