@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block body %}
-    <h1>Welcome to <span>Foodversity</span></h1>
+    <h1>Welcome to <span>Foodversity, </span>{{ username }}</h1>
     <div>
         <form action="/get_recipes" method="GET">
             <input type="text" name="ingredients" id="ingredients" placeholder="Write your ingredients here..."><input type="submit" value="Submit">

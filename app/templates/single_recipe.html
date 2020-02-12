@@ -31,7 +31,11 @@
                 <h5 class="api-error">API does not provide recipe instructions.</h5>
             {% endif %}
         </div>
-        <div class="card-footer"><a href="">Save Recipe</a></div>
+        <div class="card-footer">
+            <form action="/profile/{{ id }}" method='GET'>
+            <input type="submit">Save Recipe</input>
+        </form>
+        </div>
     </div>
 </div>
 {% endblock %}
