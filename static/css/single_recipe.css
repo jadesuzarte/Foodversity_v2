@@ -1,3 +1,36 @@
 body {
     background-image: url(http://www.transparenttextures.com/patterns/food.png);
+    padding: 10px;
+}
+
+h1 {
+    text-align: center;
+    text-decoration: underline;
+}
+
+div[class="card"] {
+    width: 500px;
+}
+
+.flex-container {
+    display: flex;
+    justify-content: center;
+}
+
+div[class="card-header"] {
+    text-align: center;
+    font-weight: bold;
+}
+
+h4[class="card-title"] {
+    text-decoration: underline;
+}
+
+.api-error {
+    color: rgb(255, 0, 0);
+}
+
+div[class="card"] img {
+    height: 500px;
+    width: 500px;
 }
