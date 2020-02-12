@@ -1,3 +1,4 @@
+import os
 import requests
 from flask import Flask, render_template, url_for, request, redirect, jsonify, current_app, g
 from flask_sqlalchemy import SQLAlchemy
@@ -57,6 +58,11 @@ class Recipes(db.Model):
     def __repr__(self):
         return "%r" % self.recipe_id 
 
+# API CALLS
+@app.route("/")
+def homepage():
+    return render_template('homepage.html')
+
 @app.route('/signup', methods=['POST', 'GET'])
 def signup_page():
     add = text('INSERT INTO users (username, password) VALUES (?, ?)')
@@ -83,22 +89,10 @@ def signup_page():
 
     return render_template('signup.html')
 
-        # if error is None:
-        #     try:
-        #         db.session.add(new_user)
-        #         db.session.commit()
-        #         return render_template('registered.html')
-        #     except:
-        #         return "There was a problem with your registration. Please try again later."
-        # else:
-        #     return render_template ('signup.html')
-
-# API CALLS
-@app.route("/")
-def homepage():
-    return render_template('homepage.html')
-        flash(error)
-    return render_template('signup.html')
+# Goes to the profile page
+@app.route('/profile')
+def profile():
+    return render_template("user_profile.html")
 
 # Goes to a page that displays all recipes (based on the ingredients by the user)
 @app.route('/recipe_list', methods=["GET"])
