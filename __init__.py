@@ -72,6 +72,13 @@ def profile():
 def recipe_list():
     return render_template("recipe_list.html")
 
+# Shows more detail about a chosen recipe
+@app.route('/single/<int:id>', methods=["GET"])
+def single(id):
+    print(id)
+    return render_template("single_recipe.html", recipe_id=id)
+
+# Shows 8 possible recipes that can be made (given the ingredients)
 @app.route('/get_recipes', methods=["GET"])
 def get_recipes():
     ingredients = request.args.get('ingredients')
