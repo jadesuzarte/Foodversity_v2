@@ -1,29 +1,17 @@
 import os
 import requests
-from flask import Flask, render_template, url_for, request, redirect, jsonify, current_app, g
+import sqlite3
+from flask import Flask, render_template, url_for, request, redirect, jsonify, current_app, g, flash
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import text
 import json
 from app import app, db
 
-# def get_db():
-#     if 'db' not in g:
-#         g.db = sqlite.connect(
-#             current_app.config['DATABASE'],
-#             detect_types=sqlite.PARSE_DECLTYPES
-#         )
-#         g.db.row_factory = sqlite.Row
-
-    # return g.db
-
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///recipes.db'
-# app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-# db = SQLAlchemy(app) #initialized the database
-
 class Users(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), nullable=False)
     password = db.Column(db.String(80), nullable=False)
+    
     def __init__(self, username, password):
         self.username = username
         self.password = password
@@ -63,31 +51,32 @@ class Recipes(db.Model):
 def homepage():
     return render_template('homepage.html')
 
-@app.route('/signup', methods=['POST', 'GET'])
+@app.route("/signup", methods=["GET", "POST"])
 def signup_page():
-    add = text('INSERT INTO users (username, password) VALUES (?, ?)')
-    selecting = text('SELECT id FROM users WHERE username = ?')
-    
-    if request.method == 'POST':
+    error = None
+
+    if request.method == "GET":
+        return render_template("signup.html")
+    elif request.method == "POST":
         username = request.form['username']
         password = request.form['password']
-        error = None
-        # new_user = Users(username = user_input,password = password_input)
-        if not username:
-            error = 'Username is required.'
-        elif not password:
-            error = 'Password is required.'
-        elif db.engine.execute(add, (username)
-        ).fetchone() is not None:
-            error = 'User {} is already registered.'.format(username)
-            db.engine.execute(
-            )
-            db.commit()
-            return render_template('registered.html')
-        
-        flash(error)
+        new_user = Users(username=username, password=password)
+        existing_or_not_existing = Users.query.filter_by(username=username).first()
+            
+        if existing_or_not_existing:
+            error = "User {} is already registered".format(username)
 
-    return render_template('signup.html')
+        if error is None:
+            try:
+                db.session.add(new_user)
+                db.session.commit()
+                return render_template("registered.html")
+            except:
+                return str(sys.exc_info()[1])
+        else:
+            return error
+
+    return redirect("/signup")
 
 # Goes to the profile page
 @app.route('/profile')
