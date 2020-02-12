@@ -75,8 +75,17 @@ def recipe_list():
 # Shows more detail about a chosen recipe
 @app.route('/single/<int:id>', methods=["GET"])
 def single(id):
-    print(id)
-    return render_template("single_recipe.html", recipe_id=id)
+    api_key = os.getenv("apikey")
+    # Requests to get additional info about the selected recipe and its ingredients
+    request_1 = "https://api.spoonacular.com/recipes/{id}/information?apiKey={apikey}&includeNutrition=false&includeInstruction=true".format(id=id, apikey=api_key)
+    request_2 = "https://api.spoonacular.com/recipes/{id}/ingredientWidget.json?apiKey={apikey}".format(id=id, apikey=api_key)
+    # Sending the requests
+    response_1 = requests.get(request_1)
+    response_2 = requests.get(request_2)
+    # The single recipe and its ingredients
+    res_data_1 = response_1.json()
+    res_data_2 = response_2.json()
+    return render_template("single_recipe.html", single_recipe=res_data_1, ingredients=res_data_2)
 
 # Shows 8 possible recipes that can be made (given the ingredients)
 @app.route('/get_recipes', methods=["GET"])
