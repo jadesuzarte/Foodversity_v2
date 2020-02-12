@@ -1,29 +1,22 @@
-import os
 import requests
-from flask import Flask, render_template, url_for, request, redirect, jsonify
+from flask import Flask, render_template, url_for, request, redirect, jsonify, current_app, g
 from flask_sqlalchemy import SQLAlchemy
-from datetime import datetime
+from sqlalchemy import text
 import json
-from dotenv import load_dotenv, find_dotenv
-load_dotenv()
-
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///recipes.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-db = SQLAlchemy(app) #initialized the database
+from app import app, db
 
 class Users(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), nullable=False)
     password = db.Column(db.String(80), nullable=False)
-
+    
     def __init__(self, username, password):
         self.username = username
         self.password = password
     
     def __repr__(self):
         return '<User %r>' % self.id #EXPLAIN THIS
-
+    
 class Recipes(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     recipe_id = db.Column(db.Integer)
@@ -36,7 +29,7 @@ class Recipes(db.Model):
     gluten_free = db.Column(db.Boolean)
     dairy_free = db.Column(db.Boolean)
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable = False)
-    
+
     def __init__(self, recipe_id, name, image, ingredients, ready_in_mins, dairy, vegan, gluten_free, dairy_free, user_id):
         self.recipe_id = recipe_id
         self.name = name
@@ -50,22 +43,44 @@ class Recipes(db.Model):
         self.user_id = user_id
 
     def __repr__(self):
-        return "%r" % self.recipe_id 
+        return "%r" % self.recipe_id
 
 # Goes to the login page
 @app.route('/')
 def home():
     return render_template("login.html")
 
-# Goes to the registration form
-@app.route('/signup')
-def signup():
-    return render_template("signup.html")
-
 # Goes to the profile page
 @app.route('/profile')
 def profile():
     return render_template("user_profile.html")
+
+# Goes to the registration form
+@app.route('/signup', methods=['POST', 'GET'])
+def signup_page():
+    add = text('INSERT INTO users (username, password) VALUES (?, ?)')
+    selecting = text('SELECT id FROM users WHERE username = ?')
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        error = None
+        # new_user = Users(username = user_input,password = password_input)
+        if not username:
+            error = 'Username is required.'
+        elif not password:
+            error = 'Password is required.'
+        elif db.engine.execute(add, (username)
+        ).fetchone() is not None:
+            error = 'User {} is already registered.'.format(username)
+        if error is None:
+            db.engine.execute(
+                selecting,
+                (username, password)
+            )
+            db.commit()
+            return render_template('registered.html')
+        flash(error)
+    return render_template('signup.html')
 
 # Goes to a page that displays all recipes (based on the ingredients by the user)
 @app.route('/recipe_list', methods=["GET"])
@@ -102,6 +117,3 @@ def get_recipes():
     # The list of recipes
     res_data = response.json()
     return render_template('recipe_list.html', recipes=res_data)
-
-if __name__ == "__main__":
-    app.run(debug=True)
