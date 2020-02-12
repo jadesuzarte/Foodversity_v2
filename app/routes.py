@@ -110,7 +110,7 @@ def profile(id):
     username = user.username
     return render_template("user_profile.html", user_id=id, username=username)
 
-# Goes to a page that displays all recipes (based on the ingredients by the user)
+# Goes to a page that displays all recipes on the profile page (based on the ingredients by the user)
 @app.route('/recipe_list', methods=["GET"])
 def recipe_list():
     return render_template("recipe_list.html")
@@ -131,8 +131,8 @@ def single(id):
     return render_template("single_recipe.html", recipe=res_data_1, ingredients=res_data_2["ingredients"])
 
 # Shows 8 possible recipes that can be made (given the ingredients)
-@app.route('/get_recipes', methods=["GET"])
-def get_recipes():
+@app.route('/get_recipes/<int:id>', methods=["GET"])
+def get_recipes(id):
     ingredients = request.args.get('ingredients')
     # Converting the search term into a format that's appropriate for the API call
     search = ','.join(ingredients.split(", "))
@@ -144,4 +144,4 @@ def get_recipes():
     response = requests.get(req)
     # The list of recipes
     res_data = response.json()
-    return render_template('recipe_list.html', recipes=res_data)
+    return render_template('recipe_list.html', recipes=res_data, user_id=id)
