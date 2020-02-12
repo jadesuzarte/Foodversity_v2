@@ -74,7 +74,7 @@ def signup_page():
             except:
                 return str(sys.exc_info()[1])
         else:
-            return error
+            return render_template("error.html", error=error)
 
     return redirect("/signup")
 
@@ -94,8 +94,7 @@ def login():
             route = '/profile/{}'.format(user_id)
             return redirect(route)
         else: 
-            error = 'User/password are incorrect or do not exist'
-            return error 
+            return render_template("error.html", error='User/password is incorrect or do not exist') 
     
     return render_template("user_profile.html")
 
@@ -140,3 +139,7 @@ def get_recipes(id):
     # The list of recipes
     res_data = response.json()
     return render_template('recipe_list.html', recipes=res_data, user_id=id)
+
+@app.route("/error", methods=["GET"])
+def error():
+    return render_template("error.html")
