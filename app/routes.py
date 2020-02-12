@@ -23,14 +23,12 @@ class Users(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), nullable=False)
     password = db.Column(db.String(80), nullable=False)
-
     def __init__(self, username, password):
         self.username = username
         self.password = password
     
     def __repr__(self):
         return '<User %r>' % self.id #EXPLAIN THIS
-
 class Recipes(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     recipe_id = db.Column(db.Integer)
@@ -69,7 +67,6 @@ def signup_page():
         password = request.form['password']
         error = None
         # new_user = Users(username = user_input,password = password_input)
-
         if not username:
             error = 'Username is required.'
         elif not password:
@@ -77,11 +74,7 @@ def signup_page():
         elif db.engine.execute(add, (username)
         ).fetchone() is not None:
             error = 'User {} is already registered.'.format(username)
-
-        if error is None:
             db.engine.execute(
-                selecting,
-                (username, password)
             )
             db.commit()
             return render_template('registered.html')
@@ -100,7 +93,45 @@ def signup_page():
         # else:
         #     return render_template ('signup.html')
 
-
+# API CALLS
 @app.route("/")
 def homepage():
     return render_template('homepage.html')
+        flash(error)
+    return render_template('signup.html')
+
+# Goes to a page that displays all recipes (based on the ingredients by the user)
+@app.route('/recipe_list', methods=["GET"])
+def recipe_list():
+    return render_template("recipe_list.html")
+
+# Shows more detail about a chosen recipe
+@app.route('/single/<int:id>', methods=["GET"])
+def single(id):
+    api_key = os.getenv("apikey")
+    # Requests to get additional info about the selected recipe and its ingredients
+    request_1 = "https://api.spoonacular.com/recipes/{id}/information?apiKey={apikey}&includeNutrition=false&includeInstruction=true".format(id=id, apikey=api_key)
+    request_2 = "https://api.spoonacular.com/recipes/{id}/ingredientWidget.json?apiKey={apikey}".format(id=id, apikey=api_key)
+    # Sending the requests
+    response_1 = requests.get(request_1)
+    response_2 = requests.get(request_2)
+    # The single recipe and its ingredients
+    res_data_1 = response_1.json()
+    res_data_2 = response_2.json()
+    return render_template("single_recipe.html", recipe=res_data_1, ingredients=res_data_2["ingredients"])
+
+# Shows 8 possible recipes that can be made (given the ingredients)
+@app.route('/get_recipes', methods=["GET"])
+def get_recipes():
+    ingredients = request.args.get('ingredients')
+    # Converting the search term into a format that's appropriate for the API call
+    search = ','.join(ingredients.split(", "))
+    # My spoonacular api key
+    api_key = os.getenv("apikey")
+    # The http request to the spooner API
+    req = "https://api.spoonacular.com/recipes/findByIngredients?apiKey={apikey}&ingredients={ingredients}&number=8".format(apikey=api_key, ingredients=ingredients)
+    # Sending the request to the API
+    response = requests.get(req)
+    # The list of recipes
+    res_data = response.json()
+    return render_template('recipe_list.html', recipes=res_data)
