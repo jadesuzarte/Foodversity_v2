@@ -85,7 +85,7 @@ def single(id):
     # The single recipe and its ingredients
     res_data_1 = response_1.json()
     res_data_2 = response_2.json()
-    return render_template("single_recipe.html", single_recipe=res_data_1, ingredients=res_data_2)
+    return render_template("single_recipe.html", recipe=res_data_1, ingredients=res_data_2["ingredients"])
 
 # Shows 8 possible recipes that can be made (given the ingredients)
 @app.route('/get_recipes', methods=["GET"])
