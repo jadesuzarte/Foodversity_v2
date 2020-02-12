@@ -86,10 +86,10 @@ def login():
     if request.method == "POST":
         username = request.form['username']
         password = request.form['password']
-        existing_or_not_existing = Users.query.filter_by(username=username).first()
+        existing_or_not_existing = Users.query.filter_by(username=username, password=password).first()
 
         if existing_or_not_existing:
-            user = Users.query.filter_by(username=username).first()
+            user = Users.query.filter_by(username=username, password=password).first()
             user_id = user.id
             route = '/profile/{}'.format(user_id)
             return redirect(route)
@@ -99,11 +99,6 @@ def login():
     
     return render_template("user_profile.html")
 
-# @app.route('/user/<int:id>', methods=['GET'])
-# def profile_page():
-#     if request.method == "GET"
-#     recipe_id
-# Goes to the profile page
 @app.route('/profile/<int:id>')
 def profile(id):
     user = Users.query.filter_by(id=id).first()
