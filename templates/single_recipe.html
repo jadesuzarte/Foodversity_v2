@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/single_recipe.css') }}">
+{% endblock %}
+
+{% block body %}
+<h1>This is the single recipe page</h1>
+<h2>Recipe ID: {{ recipe_id }}</h2>
+{% endblock %}
