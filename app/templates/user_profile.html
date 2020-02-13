@@ -1,6 +1,9 @@
 {% extends 'base.html' %}
 
 {% block head %}
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/profile.css') }}" type="text/css">
 {% endblock %}
 
@@ -8,21 +11,24 @@
     <h1>Welcome to <span>Foodversity, </span>{{ username }}</h1>
     <div>
         <form action="/get_recipes/{{ user_id }}" method="GET">
-            <input type="text" name="ingredients" id="ingredients" placeholder="Write your ingredients here..."><input type="submit" value="Submit">
+            <input type="text" name="ingredients" id="ingredients" placeholder="Write your ingredients here...">
+            <input type="submit" value="Submit">
         </form>
     </div>
     {% if recipes == [] %}
         <h2>No Saved Recipes</h2>
         <hr>
     {% else %}
-    {% for recipe in recipes %}
-    <div class="card">
-        <img class="card-img-top" src="{{ recipe.image }}" alt="Recipe image">
-        <div class="card-body">
-          <h4 class="card-title">{{ recipe.name }}</h4>
-          <a href="/single/{{ user_id }}/{{ recipe.recipe_id }}">More Details</a>
+        <h2>Your Favourite Recipe(s)</h2>
+        <hr>
+        <div class="flex-container">
+            {% for recipe in recipes %}    
+                <div class="card">
+                    <div class="card-header">{{ recipe.name }}</div>
+                    <img class="card-img-top" src="{{ recipe.image }}" alt="Recipe image">
+                    <div class="card-footer"><a href="/single/{{ user_id }}/{{ recipe.recipe_id }}">More Details</a></div>
+                </div>
+            {% endfor %}      
         </div>
-      </div>
-    {% endfor %}
     {% endif %}
 {% endblock %}

@@ -7,12 +7,7 @@ from sqlalchemy import text
 import json
 import sys
 from app import app, db
-from flask_script import Manager
-from flask_migrate import Migrate, MigrateCommand
-
-migrate = Migrate(app, db)
-manager = Manager(app)
-manager.add_command("db", MigrateCommand)
+from werkzeug.security import check_password_hash, generate_password_hash
 
 class Users(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -54,26 +49,32 @@ class Recipes(db.Model):
     def __repr__(self):
         return "%r" % self.recipe_id 
 
-# API CALLS
+# Shows the login page
 @app.route("/")
 def homepage():
     return render_template('login.html')
 
+# Shows the registration page
 @app.route("/signup", methods=["GET", "POST"])
 def signup_page():
     error = None
-
+    # Navigates to the signup page
     if request.method == "GET":
         return render_template("signup.html")
+    # Inserts a new user into the database
     elif request.method == "POST":
+        # The username and password entered by the user
         username = request.form['username']
         password = request.form['password']
+        # Making the new user
         new_user = Users(username=username, password=password)
-        existing_or_not_existing = Users.query.filter_by(username=username).first()
-            
-        if existing_or_not_existing:
-            error = "User {} is already registered".format(username)
+        # Checking if there's an existing user with the inputted username
+        existing_user = Users.query.filter_by(username=username).first()
 
+        # If a user with the provided username exists, an error page is displayed informing the user of this
+        if existing_user:
+            error = "User {} is already registered".format(username)
+    
         if error is None:
             try:
                 db.session.add(new_user)
@@ -92,9 +93,11 @@ def login():
     if request.method == "POST":
         username = request.form['username']
         password = request.form['password']
-        existing_or_not_existing = Users.query.filter_by(username=username, password=password).first()
+        
+        # Checking if there's a registered user with the same username and password in the db
+        existing_user = Users.query.filter_by(username=username, password=password).first()
 
-        if existing_or_not_existing:
+        if existing_user:
             user = Users.query.filter_by(username=username, password=password).first()
             user_id = user.id
             route = '/profile/{}'.format(user_id)
@@ -131,8 +134,6 @@ def single(userid, recipeid):
     res_data_1 = response_1.json()
     res_data_2 = response_2.json()
     return render_template("single_recipe.html", recipe=res_data_1, ingredients=res_data_2["ingredients"], user_id=userid, recipe_id=recipeid)
-
-
 
 # Shows 8 possible recipes that can be made with the inputted ingredients
 @app.route('/get_recipes/<int:id>', methods=["GET"])
