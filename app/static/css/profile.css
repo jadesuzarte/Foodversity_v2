@@ -34,6 +34,8 @@ form input[type="text"] {
 
 .flex-container > div[class="card"] {
     margin-right: 10px;
+    height: 400px;
+    width: 400px;
 }
 
 div[class="card-header"] {
