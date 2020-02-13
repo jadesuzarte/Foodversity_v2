@@ -108,7 +108,6 @@ def profile(id):
     username = user.username
     # Getting all recipes of the registered user
     all_recipes = Recipes.query.filter_by(user_id=id).all();
-    print(all_recipes)
 
     return render_template("user_profile.html", user_id=id, username=username, recipes=all_recipes)
 
@@ -180,36 +179,40 @@ def get_recipes(id):
     return render_template('recipe_list.html', recipes=res_data, user_id=id)
 
 # Inserts a new recipe into the database
-# @app.route("/save/<int:userid>/<int:recipeid>", methods=["POST", "GET"])
-# def save(userid, recipeid):
-#     error = None
+@app.route("/save/<int:userid>", methods=["GET", "POST"])
+def save(userid):
+    error = None
+    if request.method == "POST":
+        # Grabbing data about the recipe from the form
+        recipe_id = request.form["recipe_id"]
+        recipe_name = request.form['recipe_title']
+        recipe_image = request.form['recipe_image']
+        recipe_ready_in_mins = request.form['recipe_ready_in_mins']
+        recipe_gluten_free = request.form['recipe_gluten_free']
+        recipe_dairy_free = request.form['recipe_dairy_free']
+        recipe_vegan = request.form['recipe_vegan']
 
-#     if request.method == "POST":
-#         recipe_name = request.form['recipe_title']
-#         recipe_image = request.form['recipe_image']
-#         recipe_ready_in_mins = request.form['recipe_ready_in_mins']
-#         recipe_gluten_free = request.form['recipe_gluten_free']
-#         recipe_dairy_free = request.form['recipe_dairy_free']
-#         recipe_vegan = request.form['recipe_vegan']
-#         new_recipe = Recipes(recipe_id=recipeid, name=recipe_name, image=recipe_image, ingredients="", ready_in_mins=recipe_ready_in_mins, dairy=False, dairy_free=recipe_dairy_free, gluten_free=recipe_gluten_free, vegan=recipe_vegan, user_id=userid)
+        # the recipe to insert into the db
+        new_recipe = Recipes(recipe_id=recipe_id, name=recipe_name, image=recipe_image, ingredients="", ready_in_mins=recipe_ready_in_mins, dairy=False, dairy_free=False, gluten_free=False, vegan=False, user_id=userid)
         
-#         existing_recipe = Recipes.query.filter_by(recipe_id=recipeid).first()
+        # Checks if 
+        existing_recipe = Recipes.query.filter_by(name=recipe_name).first()
             
-#         if existing_recipe:
-#             error = "{} already exists in the database".format(recipe_name)
+        if existing_recipe:
+            error = "{} already exists in the database".format(recipe_name)
 
-#         if error is None:
-#             try:
-#                 db.session.add(new_recipe)
-#                 db.session.commit()
-#                 flash("Your recipe has been saved")
-#             except:
-#                 error = str(sys.exc_info()[1])
-#         else:
-#             return render_template("error.html", error=error)
-    
-#     profile = '/profile/{}'.format(userid)
-#     return redirect(profile)
+        if error is None:
+            try:
+                db.session.add(new_recipe)
+                db.session.commit()
+                return "Recipe was inserted."
+            except:
+                return str(sys.exc_info()[1])
+            finally:
+                route = "/profile/{}".format(userid)
+                return redirect(route)
+        else:
+            return render_template("error.html", error=error)
 
 @app.route("/error", methods=["GET"])
 def error():
