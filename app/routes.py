@@ -139,7 +139,7 @@ def single(userid, recipeid):
 def get_recipes(id):
     ingredients = request.args.get('ingredients')
     # Converting the search term into a format that's appropriate for the API call
-    search = ','.join(re.split(r'[^a-zA-Z]\s*', ingredients))
+    search = ','.join(re.split(r'[^a-zA-Z_]\s*', ingredients))
     # My spoonacular api key
     api_key = os.getenv("apikey")
     # The http request to the spooner API
