@@ -5,7 +5,14 @@ from flask import Flask, render_template, url_for, request, redirect, jsonify, c
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import text
 import json
+import sys
 from app import app, db
+from flask_script import Manager
+from flask_migrate import Migrate, MigrateCommand
+
+migrate = Migrate(app, db)
+manager = Manager(app)
+manager.add_command("db", MigrateCommand)
 
 class Users(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -18,6 +25,7 @@ class Users(db.Model):
     
     def __repr__(self):
         return '<User %r>' % self.id #EXPLAIN THIS
+
 class Recipes(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     recipe_id = db.Column(db.Integer)
@@ -72,7 +80,8 @@ def signup_page():
                 db.session.commit()
                 return render_template("registered.html")
             except:
-                return str(sys.exc_info()[1])
+                error = str(sys.exc_info()[1])
+                return render_template("error.html", error=error)
         else:
             return render_template("error.html", error=error)
 
@@ -97,7 +106,11 @@ def login():
 def profile(id):
     user = Users.query.filter_by(id=id).first()
     username = user.username
-    return render_template("user_profile.html", user_id=id, username=username)
+    # Getting all recipes of the registered user
+    all_recipes = Recipes.query.filter_by(user_id=id).all();
+    print(all_recipes)
+
+    return render_template("user_profile.html", user_id=id, username=username, recipes=all_recipes)
 
 # Goes to a page that displays all recipes on the profile page (based on the ingredients by the user)
 @app.route('/recipe_list', methods=["GET"])
@@ -118,9 +131,9 @@ def single(userid, recipeid):
     # The single recipe and its ingredients
     res_data_1 = response_1.json()
     res_data_2 = response_2.json()
-    return render_template("single_recipe.html", recipe=res_data_1, ingredients=res_data_2["ingredients"])
+    return render_template("single_recipe.html", recipe=res_data_1, ingredients=res_data_2["ingredients"], user_id=userid, recipe_id=recipeid)
 
-# Shows 8 possible recipes that can be made (given the ingredients)
+# Shows 8 possible recipes that can be made with the inputted ingredients
 @app.route('/get_recipes/<int:id>', methods=["GET"])
 def get_recipes(id):
     ingredients = request.args.get('ingredients')
@@ -135,6 +148,38 @@ def get_recipes(id):
     # The list of recipes
     res_data = response.json()
     return render_template('recipe_list.html', recipes=res_data, user_id=id)
+
+# Inserts a new recipe into the database
+@app.route("/save/<int:userid>/<int:recipeid>", methods=["POST", "GET"])
+def save(userid, recipeid):
+    error = None
+
+    if request.method == "POST":
+        recipe_name = request.form['recipe_title']
+        recipe_image = request.form['recipe_image']
+        recipe_ready_in_mins = request.form['recipe_ready_in_mins']
+        recipe_gluten_free = request.form['recipe_gluten_free']
+        recipe_dairy_free = request.form['recipe_dairy_free']
+        recipe_vegan = request.form['recipe_vegan']
+        new_recipe = Recipes(recipe_id=recipeid, name=recipe_name, image=recipe_image, ingredients="", ready_in_mins=recipe_ready_in_mins, dairy=False, dairy_free=recipe_dairy_free, gluten_free=recipe_gluten_free, vegan=recipe_vegan, user_id=userid)
+        
+        existing_recipe = Recipes.query.filter_by(recipe_id=recipeid).first()
+            
+        if existing_recipe:
+            error = "{} already exists in the database".format(recipe_name)
+
+        if error is None:
+            try:
+                db.session.add(new_recipe)
+                db.session.commit()
+                flash("Your recipe has been saved")
+            except:
+                error = str(sys.exc_info()[1])
+        else:
+            return render_template("error.html", error=error)
+    
+    profile = '/profile/{}'.format(userid)
+    return redirect(profile)
 
 @app.route("/error", methods=["GET"])
 def error():
