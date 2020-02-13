@@ -11,10 +11,10 @@
             <input type="text" name="ingredients" id="ingredients" placeholder="Write your ingredients here..."><input type="submit" value="Submit">
         </form>
     </div>
-    {% if recipes %}
-
-    {% else %}
+    {% if recipes == [] %}
         <h2>No Saved Recipes</h2>
         <hr>
+    {% else %}
+
     {% endif %}
 {% endblock %}
