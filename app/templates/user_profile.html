@@ -15,6 +15,14 @@
         <h2>No Saved Recipes</h2>
         <hr>
     {% else %}
-
+    {% for recipe in recipes %}
+    <div class="card">
+        <img class="card-img-top" src="{{ recipe.image }}" alt="Recipe image">
+        <div class="card-body">
+          <h4 class="card-title">{{ recipe.name }}</h4>
+          <a href="/single/{{ user_id }}/{{ recipe.id }}">More Details</a>
+        </div>
+      </div>
+    {% endfor %}
     {% endif %}
 {% endblock %}
