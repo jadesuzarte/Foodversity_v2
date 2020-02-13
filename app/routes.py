@@ -108,7 +108,6 @@ def profile(id):
     username = user.username
     # Getting all recipes of the registered user
     all_recipes = Recipes.query.filter_by(user_id=id).all();
-    print(all_recipes)
 
     return render_template("user_profile.html", user_id=id, username=username, recipes=all_recipes)
 
@@ -179,6 +178,9 @@ def save(userid):
                 return "Recipe was inserted."
             except:
                 return str(sys.exc_info()[1])
+            finally:
+                route = "/profile/{}".format(userid)
+                return redirect(route)
         else:
             return render_template("error.html", error=error)
 
