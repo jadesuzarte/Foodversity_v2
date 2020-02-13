@@ -78,12 +78,14 @@ def signup_page():
             try:
                 db.session.add(new_user)
                 db.session.commit()
+                flash("You are registered!")
                 return render_template("registered.html")
             except:
                 error = str(sys.exc_info()[1])
                 return render_template("error.html", error=error)
         else:
             return render_template("error.html", error=error)
+
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -189,3 +191,13 @@ def save(userid):
 @app.route("/error", methods=["GET"])
 def error():
     return render_template("error.html")
+
+@app.route("/homepage")
+def first_page():
+    return render_template('homepage.html')
+
+@app.route("/registered")
+def registered():
+    return render_template('registered.html')
+
+
