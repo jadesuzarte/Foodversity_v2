@@ -118,7 +118,7 @@ def recipe_list():
     return render_template("recipe_list.html")
 
 # Shows more detail about a chosen recipe
-@app.route('/single/<int:userid>/<int:recipeid>', methods=["GET"])
+@app.route('/single/<int:userid>/<int:recipeid>', methods=["GET", "POST"])
 def single(userid, recipeid):
     api_key = os.getenv("apikey")
     # Request to get additional info about the selected recipe 
@@ -132,36 +132,15 @@ def single(userid, recipeid):
     res_data_1 = response_1.json()
     res_data_2 = response_2.json()
     return render_template("single_recipe.html", recipe=res_data_1, ingredients=res_data_2["ingredients"], user_id=userid, recipe_id=recipeid)
-
-# Shows 8 possible recipes that can be made with the inputted ingredients
-@app.route('/get_recipes/<int:id>', methods=["GET"])
-def get_recipes(id):
-    ingredients = request.args.get('ingredients')
-    # Converting the search term into a format that's appropriate for the API call
-    search = ','.join(ingredients.split(", "))
-    # My spoonacular api key
-    api_key = os.getenv("apikey")
-    # The http request to the spooner API
-    req = "https://api.spoonacular.com/recipes/findByIngredients?apiKey={apikey}&ingredients={ingredients}&number=8".format(apikey=api_key, ingredients=ingredients)
-    # Sending the request to the API
-    response = requests.get(req)
-    # The list of recipes
-    res_data = response.json()
-    return render_template('recipe_list.html', recipes=res_data, user_id=id)
-
-# Inserts a new recipe into the database
-@app.route("/save/<int:userid>/<int:recipeid>", methods=["POST", "GET"])
-def save(userid, recipeid):
-    error = None
-
+    
     if request.method == "POST":
-        recipe_name = request.form['recipe_title']
-        recipe_image = request.form['recipe_image']
-        recipe_ready_in_mins = request.form['recipe_ready_in_mins']
-        recipe_gluten_free = request.form['recipe_gluten_free']
-        recipe_dairy_free = request.form['recipe_dairy_free']
-        recipe_vegan = request.form['recipe_vegan']
-        new_recipe = Recipes(recipe_id=recipeid, name=recipe_name, image=recipe_image, ingredients="", ready_in_mins=recipe_ready_in_mins, dairy=False, dairy_free=recipe_dairy_free, gluten_free=recipe_gluten_free, vegan=recipe_vegan, user_id=userid)
+        # recipe_name = request.form['recipe_title']
+        # recipe_image = request.form['recipe_image']
+        # recipe_ready_in_mins = request.form['recipe_ready_in_mins']
+        # recipe_gluten_free = request.form['recipe_gluten_free']
+        # recipe_dairy_free = request.form['recipe_dairy_free']
+        # recipe_vegan = request.form['recipe_vegan']
+        new_recipe = Recipes(recipe_id=recipeid, name=res_data_1["title"], image=res_data_1["image"], ingredients="", ready_in_mins=3, dairy=False, dairy_free=False, gluten_free=False, vegan=False, user_id=userid)
         
         existing_recipe = Recipes.query.filter_by(recipe_id=recipeid).first()
             
@@ -180,6 +159,57 @@ def save(userid, recipeid):
     
     profile = '/profile/{}'.format(userid)
     return redirect(profile)
+
+
+
+
+# Shows 8 possible recipes that can be made with the inputted ingredients
+@app.route('/get_recipes/<int:id>', methods=["GET"])
+def get_recipes(id):
+    ingredients = request.args.get('ingredients')
+    # Converting the search term into a format that's appropriate for the API call
+    search = ','.join(ingredients.split(", "))
+    # My spoonacular api key
+    api_key = os.getenv("apikey")
+    # The http request to the spooner API
+    req = "https://api.spoonacular.com/recipes/findByIngredients?apiKey={apikey}&ingredients={ingredients}&number=8".format(apikey=api_key, ingredients=ingredients)
+    # Sending the request to the API
+    response = requests.get(req)
+    # The list of recipes
+    res_data = response.json()
+    return render_template('recipe_list.html', recipes=res_data, user_id=id)
+
+# Inserts a new recipe into the database
+# @app.route("/save/<int:userid>/<int:recipeid>", methods=["POST", "GET"])
+# def save(userid, recipeid):
+#     error = None
+
+#     if request.method == "POST":
+#         recipe_name = request.form['recipe_title']
+#         recipe_image = request.form['recipe_image']
+#         recipe_ready_in_mins = request.form['recipe_ready_in_mins']
+#         recipe_gluten_free = request.form['recipe_gluten_free']
+#         recipe_dairy_free = request.form['recipe_dairy_free']
+#         recipe_vegan = request.form['recipe_vegan']
+#         new_recipe = Recipes(recipe_id=recipeid, name=recipe_name, image=recipe_image, ingredients="", ready_in_mins=recipe_ready_in_mins, dairy=False, dairy_free=recipe_dairy_free, gluten_free=recipe_gluten_free, vegan=recipe_vegan, user_id=userid)
+        
+#         existing_recipe = Recipes.query.filter_by(recipe_id=recipeid).first()
+            
+#         if existing_recipe:
+#             error = "{} already exists in the database".format(recipe_name)
+
+#         if error is None:
+#             try:
+#                 db.session.add(new_recipe)
+#                 db.session.commit()
+#                 flash("Your recipe has been saved")
+#             except:
+#                 error = str(sys.exc_info()[1])
+#         else:
+#             return render_template("error.html", error=error)
+    
+#     profile = '/profile/{}'.format(userid)
+#     return redirect(profile)
 
 @app.route("/error", methods=["GET"])
 def error():
