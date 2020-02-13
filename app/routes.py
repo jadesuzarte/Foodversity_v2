@@ -135,8 +135,6 @@ def single(userid, recipeid):
     res_data_2 = response_2.json()
     return render_template("single_recipe.html", recipe=res_data_1, ingredients=res_data_2["ingredients"], user_id=userid, recipe_id=recipeid)
 
-
-
 # Shows 8 possible recipes that can be made with the inputted ingredients
 @app.route('/get_recipes/<int:id>', methods=["GET"])
 def get_recipes(id):
