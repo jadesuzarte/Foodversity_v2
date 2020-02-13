@@ -108,7 +108,7 @@ def profile(id):
     username = user.username
     # Getting all recipes of the registered user
     all_recipes = Recipes.query.filter_by(user_id=id).all();
-
+    print(all_recipes)
     return render_template("user_profile.html", user_id=id, username=username, recipes=all_recipes)
 
 # Goes to a page that displays all recipes on the profile page (based on the ingredients by the user)
