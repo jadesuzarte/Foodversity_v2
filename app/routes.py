@@ -49,7 +49,7 @@ class Recipes(db.Model):
 # API CALLS
 @app.route("/")
 def homepage():
-    return render_template('homepage.html')
+    return render_template('login.html')
 
 @app.route("/signup", methods=["GET", "POST"])
 def signup_page():
@@ -76,13 +76,10 @@ def signup_page():
         else:
             return render_template("error.html", error=error)
 
-    return redirect("/signup")
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     error = None 
-    if request.method == "GET":
-        return render_template("homepage.html")
     if request.method == "POST":
         username = request.form['username']
         password = request.form['password']
@@ -95,8 +92,6 @@ def login():
             return redirect(route)
         else: 
             return render_template("error.html", error='User/password is incorrect or do not exist') 
-    
-    return render_template("user_profile.html")
 
 @app.route('/profile/<int:id>')
 def profile(id):
@@ -113,8 +108,9 @@ def recipe_list():
 @app.route('/single/<int:id>', methods=["GET"])
 def single(id):
     api_key = os.getenv("apikey")
-    # Requests to get additional info about the selected recipe and its ingredients
-    request_1 = "https://api.spoonacular.com/recipes/{id}/information?apiKey={apikey}&includeNutrition=false&includeInstruction=true".format(id=id, apikey=api_key)
+    # Request to get additional info about the selected recipe 
+    request_1 = "https://api.spoonacular.com/recipes/{id}/information?apiKey={apikey}&includeNutrition=false&includeInstruction=true".format(id=id, apikey=api_key)  
+    # Request to get recipe's ingredients
     request_2 = "https://api.spoonacular.com/recipes/{id}/ingredientWidget.json?apiKey={apikey}".format(id=id, apikey=api_key)
     # Sending the requests
     response_1 = requests.get(request_1)
