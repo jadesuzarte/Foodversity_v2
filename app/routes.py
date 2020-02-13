@@ -131,34 +131,6 @@ def single(userid, recipeid):
     res_data_1 = response_1.json()
     res_data_2 = response_2.json()
     return render_template("single_recipe.html", recipe=res_data_1, ingredients=res_data_2["ingredients"], user_id=userid, recipe_id=recipeid)
-    
-    if request.method == "POST":
-        # recipe_name = request.form['recipe_title']
-        # recipe_image = request.form['recipe_image']
-        # recipe_ready_in_mins = request.form['recipe_ready_in_mins']
-        # recipe_gluten_free = request.form['recipe_gluten_free']
-        # recipe_dairy_free = request.form['recipe_dairy_free']
-        # recipe_vegan = request.form['recipe_vegan']
-        new_recipe = Recipes(recipe_id=recipeid, name=res_data_1["title"], image=res_data_1["image"], ingredients="", ready_in_mins=3, dairy=False, dairy_free=False, gluten_free=False, vegan=False, user_id=userid)
-        
-        existing_recipe = Recipes.query.filter_by(recipe_id=recipeid).first()
-            
-        if existing_recipe:
-            error = "{} already exists in the database".format(recipe_name)
-
-        if error is None:
-            try:
-                db.session.add(new_recipe)
-                db.session.commit()
-                flash("Your recipe has been saved")
-            except:
-                error = str(sys.exc_info()[1])
-        else:
-            return render_template("error.html", error=error)
-    
-    profile = '/profile/{}'.format(userid)
-    return redirect(profile)
-
 
 
 
