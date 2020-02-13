@@ -74,16 +74,37 @@ def signup_page():
             except:
                 return str(sys.exc_info()[1])
         else:
-            return error
+            return render_template("error.html", error=error)
 
     return redirect("/signup")
 
-# Goes to the profile page
-@app.route('/profile')
-def profile():
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    error = None 
+    if request.method == "GET":
+        return render_template("homepage.html")
+    if request.method == "POST":
+        username = request.form['username']
+        password = request.form['password']
+        existing_or_not_existing = Users.query.filter_by(username=username, password=password).first()
+
+        if existing_or_not_existing:
+            user = Users.query.filter_by(username=username, password=password).first()
+            user_id = user.id
+            route = '/profile/{}'.format(user_id)
+            return redirect(route)
+        else: 
+            return render_template("error.html", error='User/password is incorrect or do not exist') 
+    
     return render_template("user_profile.html")
 
-# Goes to a page that displays all recipes (based on the ingredients by the user)
+@app.route('/profile/<int:id>')
+def profile(id):
+    user = Users.query.filter_by(id=id).first()
+    username = user.username
+    return render_template("user_profile.html", user_id=id, username=username)
+
+# Goes to a page that displays all recipes on the profile page (based on the ingredients by the user)
 @app.route('/recipe_list', methods=["GET"])
 def recipe_list():
     return render_template("recipe_list.html")
@@ -104,8 +125,8 @@ def single(id):
     return render_template("single_recipe.html", recipe=res_data_1, ingredients=res_data_2["ingredients"])
 
 # Shows 8 possible recipes that can be made (given the ingredients)
-@app.route('/get_recipes', methods=["GET"])
-def get_recipes():
+@app.route('/get_recipes/<int:id>', methods=["GET"])
+def get_recipes(id):
     ingredients = request.args.get('ingredients')
     # Converting the search term into a format that's appropriate for the API call
     search = ','.join(ingredients.split(", "))
@@ -117,4 +138,8 @@ def get_recipes():
     response = requests.get(req)
     # The list of recipes
     res_data = response.json()
-    return render_template('recipe_list.html', recipes=res_data)
+    return render_template('recipe_list.html', recipes=res_data, user_id=id)
+
+@app.route("/error", methods=["GET"])
+def error():
+    return render_template("error.html")
