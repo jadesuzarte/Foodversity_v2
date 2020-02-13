@@ -12,6 +12,7 @@
         <div class="card-header">{{ recipe.title }}</div>
         <img class="card-img-top" src="{{ recipe.image }}" alt="recipe image">
         <div class="card-body">
+            <p class="card-text"><strong>Ready in minutes:</strong> {{ recipe.readyInMinutes }}mins</p>
             <h4 class="card-title">Ingredients</h4>
              <!-- If recipe exists, it's shown. Otherwise, users are informed of no data in the API (defensive coding) -->
             {% if ingredients and ingredient != "" %}
@@ -32,9 +33,7 @@
             {% endif %}
         </div>
         <div class="card-footer">
-            <form action="/profile/{{ id }}" method='GET'>
-            <input type="submit">Save Recipe</input>
-        </form>
+            <form action=""><input type="submit" value="Save Recipe"></form>
         </div>
     </div>
 </div>
