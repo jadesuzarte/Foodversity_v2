@@ -33,7 +33,8 @@
             {% endif %}
         </div>
         <div class="card-footer">
-            <form action="/save/{{ user_id }}/{{ recipe_id }}" method="POST">
+            <form action="/save/{{ user_id }}" method="POST">
+                <input type="hidden" name="recipe_id" value="{{ recipe.id }}">
                 <input type="hidden" name="recipe_title" value="{{ recipe.title }}">
                 <input type="hidden" name="recipe_image" value="{{ recipe.image }}">
                 <input type="hidden" name="recipe_ready_in_mins" value="{{ recipe.readyInMinutes }}">
