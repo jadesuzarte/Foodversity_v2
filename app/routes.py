@@ -7,7 +7,7 @@ from sqlalchemy import text
 import json
 import sys
 from app import app, db
-from werkzeug.security import check_password_hash, generate_password_hash
+import re # regex
 
 class Users(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -111,7 +111,6 @@ def profile(id):
     username = user.username
     # Getting all recipes of the registered user
     all_recipes = Recipes.query.filter_by(user_id=id).all();
-    print(all_recipes)
     return render_template("user_profile.html", user_id=id, username=username, recipes=all_recipes)
 
 # Goes to a page that displays all recipes on the profile page (based on the ingredients by the user)
@@ -140,7 +139,7 @@ def single(userid, recipeid):
 def get_recipes(id):
     ingredients = request.args.get('ingredients')
     # Converting the search term into a format that's appropriate for the API call
-    search = ','.join(ingredients.split(", "))
+    search = ','.join(re.split(r'[^a-zA-Z]\s*', ingredients))
     # My spoonacular api key
     api_key = os.getenv("apikey")
     # The http request to the spooner API
