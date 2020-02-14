@@ -59,7 +59,7 @@ Presentation slides
 
 ## Challenges & Solutions
 | Challenges        | Solutions          
-| ------------- |-------------:| 
+| :------------- |-------------:| 
 | Combining React & Flask. | Abandoned the React approach for the plain HTML & CSS one. |
 | Communicating with the SQLite database. | Flask-SQLAlchemy documentation |
 | Spoonacular API had unexpected loopholes (e.g. some recipes had no instructions).  | Adapted by informing users that instructions weren’t provided by the author. |
