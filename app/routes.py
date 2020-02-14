@@ -52,7 +52,7 @@ class Recipes(db.Model):
 # Shows the login page
 @app.route("/")
 def homepage():
-    return render_template('login.html')
+    return render_template('homepage.html')
 
 # Shows the registration page
 @app.route("/signup", methods=["GET", "POST"])
@@ -88,7 +88,6 @@ def signup_page():
             return render_template("error.html", error=error)
 
 
-
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     error = None 
@@ -105,7 +104,9 @@ def login():
             route = '/profile/{}'.format(user_id)
             return redirect(route)
         else: 
-            return render_template("error.html", error='User/password is incorrect or do not exist') 
+            return render_template("error.html", error='User/password is incorrect or do not exist')
+    elif request.method == "GET":
+        return render_template('login.html')
 
 @app.route('/profile/<int:id>')
 def profile(id):
@@ -191,10 +192,6 @@ def save(userid):
 @app.route("/error", methods=["GET"])
 def error():
     return render_template("error.html")
-
-@app.route("/homepage")
-def first_page():
-    return render_template('homepage.html')
 
 @app.route("/registered")
 def registered():
