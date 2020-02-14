@@ -21,4 +21,38 @@ On Friday 7th February 2020, we designed the UI of each page and the database sc
 - As a non-registered user, I want to be able to create an account, so I can later have my personal profile in the application. 
 - As a user, I want to be able to search for recipes based on the ingredients of my preference. 
 - As a user, I want to have access to previous  recipes, which I have signed within my profile, so I can use them again. 
-- As a user, I want to be able to log-out of my account, so somebody else can log-in. 
+- As a user, I want to be able to log-out of my account, so somebody else can log-in.
+
+## Daily Standup/Retro
+
+Day 1, Friday: 
+Started writing Readme
+Connected Flask with a React.js front-end 
+Create database, but did not connect it to the project
+
+Day 2, Saturday: 
+Split into backend and frontend
+Backend: Connect Flask with database 
+Frontend: Make components and containers
+
+Day 3, Monday: 
+Change database from Postgres to Sqlite3
+
+Day 4, Tuesday:
+Make API call
+Moved from React to HTML and CSS
+Started styling 
+Get the data from flask showing inside html files 
+
+Day 5, Wednesday: 
+Make logic for Login and Signup
+Make recipe page (with recipes being clickable) 
+More styling 
+
+Day 6, Thursday:
+Saving and displaying “saved” recipes into the user profile
+More styling 
+
+Friday:
+Test
+Presentation slides 
