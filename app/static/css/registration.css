@@ -29,5 +29,7 @@ form input[type="submit"] {
 }
 
 a {
-    margin-left: 90px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }

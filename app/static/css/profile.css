@@ -24,4 +24,21 @@ div {
 form input[type="text"] {
     width: 500px;
     margin-right: 5px;
+    padding-bottom: 5px;
+}
+
+.flex-container {
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 15px;
+}
+
+.flex-container > div[class="card"] {
+    margin-right: 10px;
+    height: 400px;
+    width: 400px;
+}
+
+div[class="card-header"] {
+    font-weight: bold;
 }

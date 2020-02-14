@@ -5,7 +5,9 @@ from flask import Flask, render_template, url_for, request, redirect, jsonify, c
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import text
 import json
+import sys
 from app import app, db
+import re # regex
 
 class Users(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -18,6 +20,7 @@ class Users(db.Model):
     
     def __repr__(self):
         return '<User %r>' % self.id #EXPLAIN THIS
+
 class Recipes(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     recipe_id = db.Column(db.Integer)
@@ -46,63 +49,72 @@ class Recipes(db.Model):
     def __repr__(self):
         return "%r" % self.recipe_id 
 
-# API CALLS
+# Shows the login page
 @app.route("/")
 def homepage():
     return render_template('homepage.html')
 
+# Shows the registration page
 @app.route("/signup", methods=["GET", "POST"])
 def signup_page():
     error = None
-
+    # Navigates to the signup page
     if request.method == "GET":
         return render_template("signup.html")
+    # Inserts a new user into the database
     elif request.method == "POST":
+        # The username and password entered by the user
         username = request.form['username']
         password = request.form['password']
+        # Making the new user
         new_user = Users(username=username, password=password)
-        existing_or_not_existing = Users.query.filter_by(username=username).first()
-            
-        if existing_or_not_existing:
-            error = "User {} is already registered".format(username)
+        # Checking if there's an existing user with the inputted username
+        existing_user = Users.query.filter_by(username=username).first()
 
+        # If a user with the provided username exists, an error page is displayed informing the user of this
+        if existing_user:
+            error = "User {} is already registered".format(username)
+    
         if error is None:
             try:
                 db.session.add(new_user)
                 db.session.commit()
-                return render_template("registered.html")
+                flash("You are registered!")
+                return redirect('/registered')
             except:
-                return str(sys.exc_info()[1])
+                error = str(sys.exc_info()[1])
+                return render_template("error.html", error=error)
         else:
             return render_template("error.html", error=error)
 
-    return redirect("/signup")
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     error = None 
-    if request.method == "GET":
-        return render_template("homepage.html")
     if request.method == "POST":
         username = request.form['username']
         password = request.form['password']
-        existing_or_not_existing = Users.query.filter_by(username=username, password=password).first()
+        
+        # Checking if there's a registered user with the same username and password in the db
+        existing_user = Users.query.filter_by(username=username, password=password).first()
 
-        if existing_or_not_existing:
+        if existing_user:
             user = Users.query.filter_by(username=username, password=password).first()
             user_id = user.id
             route = '/profile/{}'.format(user_id)
             return redirect(route)
         else: 
-            return render_template("error.html", error='User/password is incorrect or do not exist') 
-    
-    return render_template("user_profile.html")
+            return render_template("error.html", error='User/password is incorrect or do not exist')
+    elif request.method == "GET":
+        return render_template('login.html')
 
 @app.route('/profile/<int:id>')
 def profile(id):
     user = Users.query.filter_by(id=id).first()
     username = user.username
-    return render_template("user_profile.html", user_id=id, username=username)
+    # Getting all recipes of the registered user
+    all_recipes = Recipes.query.filter_by(user_id=id).all();
+    return render_template("user_profile.html", user_id=id, username=username, recipes=all_recipes)
 
 # Goes to a page that displays all recipes on the profile page (based on the ingredients by the user)
 @app.route('/recipe_list', methods=["GET"])
@@ -110,26 +122,27 @@ def recipe_list():
     return render_template("recipe_list.html")
 
 # Shows more detail about a chosen recipe
-@app.route('/single/<int:id>', methods=["GET"])
-def single(id):
+@app.route('/single/<int:userid>/<int:recipeid>', methods=["GET", "POST"])
+def single(userid, recipeid):
     api_key = os.getenv("apikey")
-    # Requests to get additional info about the selected recipe and its ingredients
-    request_1 = "https://api.spoonacular.com/recipes/{id}/information?apiKey={apikey}&includeNutrition=false&includeInstruction=true".format(id=id, apikey=api_key)
-    request_2 = "https://api.spoonacular.com/recipes/{id}/ingredientWidget.json?apiKey={apikey}".format(id=id, apikey=api_key)
+    # Request to get additional info about the selected recipe 
+    request_1 = "https://api.spoonacular.com/recipes/{id}/information?apiKey={apikey}&includeNutrition=false&includeInstruction=true".format(id=recipeid, apikey=api_key)  
+    # Request to get recipe's ingredients
+    request_2 = "https://api.spoonacular.com/recipes/{id}/ingredientWidget.json?apiKey={apikey}".format(id=recipeid, apikey=api_key)
     # Sending the requests
     response_1 = requests.get(request_1)
     response_2 = requests.get(request_2)
     # The single recipe and its ingredients
     res_data_1 = response_1.json()
     res_data_2 = response_2.json()
-    return render_template("single_recipe.html", recipe=res_data_1, ingredients=res_data_2["ingredients"])
+    return render_template("single_recipe.html", recipe=res_data_1, ingredients=res_data_2["ingredients"], user_id=userid, recipe_id=recipeid)
 
-# Shows 8 possible recipes that can be made (given the ingredients)
+# Shows 8 possible recipes that can be made with the inputted ingredients
 @app.route('/get_recipes/<int:id>', methods=["GET"])
 def get_recipes(id):
     ingredients = request.args.get('ingredients')
     # Converting the search term into a format that's appropriate for the API call
-    search = ','.join(ingredients.split(", "))
+    search = ','.join(re.split(r'[^a-zA-Z_]\s*', ingredients))
     # My spoonacular api key
     api_key = os.getenv("apikey")
     # The http request to the spooner API
@@ -140,6 +153,48 @@ def get_recipes(id):
     res_data = response.json()
     return render_template('recipe_list.html', recipes=res_data, user_id=id)
 
+# Inserts a new recipe into the database
+@app.route("/save/<int:userid>", methods=["GET", "POST"])
+def save(userid):
+    error = None
+    if request.method == "POST":
+        # Grabbing data about the recipe from the form
+        recipe_id = request.form["recipe_id"]
+        recipe_name = request.form['recipe_title']
+        recipe_image = request.form['recipe_image']
+        recipe_ready_in_mins = request.form['recipe_ready_in_mins']
+        recipe_gluten_free = request.form['recipe_gluten_free']
+        recipe_dairy_free = request.form['recipe_dairy_free']
+        recipe_vegan = request.form['recipe_vegan']
+
+        # the recipe to insert into the db
+        new_recipe = Recipes(recipe_id=recipe_id, name=recipe_name, image=recipe_image, ingredients="", ready_in_mins=recipe_ready_in_mins, dairy=False, dairy_free=False, gluten_free=False, vegan=False, user_id=userid)
+
+        # Checks if the recipe exists
+        existing_recipe = Recipes.query.filter_by(recipe_id=recipe_id, user_id=userid).first()
+            
+        if existing_recipe:
+            error = "You've already saved this recipe ({})".format(recipe_name)
+    
+        if error is None:
+            try:
+                db.session.add(new_recipe)
+                db.session.commit()
+                return "Recipe was inserted."
+            except:
+                return str(sys.exc_info()[1])
+            finally:
+                route = "/profile/{}".format(userid)
+                return redirect(route)
+        else:
+            return render_template("error.html", error=error)
+
 @app.route("/error", methods=["GET"])
 def error():
     return render_template("error.html")
+
+@app.route("/registered")
+def registered():
+    return render_template('registered.html')
+
+
