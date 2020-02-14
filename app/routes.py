@@ -80,7 +80,7 @@ def signup_page():
                 db.session.add(new_user)
                 db.session.commit()
                 flash("You are registered!")
-                return render_template("registered.html")
+                return redirect('/registered')
             except:
                 error = str(sys.exc_info()[1])
                 return render_template("error.html", error=error)
@@ -169,6 +169,12 @@ def save(userid):
         # the recipe to insert into the db
         new_recipe = Recipes(recipe_id=recipe_id, name=recipe_name, image=recipe_image, ingredients="", ready_in_mins=recipe_ready_in_mins, dairy=False, dairy_free=False, gluten_free=False, vegan=False, user_id=userid)
 
+        # Checks if the recipe exists, given the user's ID
+        existing_recipe = Recipes.query.filter_by(user_id=userid).first()
+            
+        if existing_recipe:
+            error = "{} already exists in the database".format(recipe_name)
+    
         if error is None:
             try:
                 db.session.add(new_recipe)
