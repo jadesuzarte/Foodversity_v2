@@ -1,12 +1,10 @@
 {% extends 'base.html' %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/registered.css') }}">
 
 {% block head %}
-
+<link rel="stylesheet" href="{{ url_for('static', filename='css/registered.css') }}" type="text/css">
 {% endblock %}
 
 {% block body %}
-<h1 align="center">Congratulations, you're now part of the Foodversity family!</h1>
+<h1>Congratulations, you're now part of the Foodversity family!</h1>
 <a href="/">You can login now</a>
-
 {%  endblock %}
