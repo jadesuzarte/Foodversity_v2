@@ -168,12 +168,6 @@ def save(userid):
 
         # the recipe to insert into the db
         new_recipe = Recipes(recipe_id=recipe_id, name=recipe_name, image=recipe_image, ingredients="", ready_in_mins=recipe_ready_in_mins, dairy=False, dairy_free=False, gluten_free=False, vegan=False, user_id=userid)
-        
-        # Checks if 
-        existing_recipe = Recipes.query.filter_by(name=recipe_name).first()
-            
-        if existing_recipe:
-            error = "{} already exists in the database".format(recipe_name)
 
         if error is None:
             try:
