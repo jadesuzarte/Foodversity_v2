@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<!-- Bootstrap -->
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" 
+integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+<!-- Custom CSS -->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/registration.css') }}" type="text/css">
+{% endblock %}
+
+{% block body %}
+<div>
+    <h2>Registration</h2>
+    <form action="/signup" method="POST">
+        <label for="username"><strong>Username: </strong></label><input type="text" name="username" id="username" required>
+        <br>
+        <label for="password"><strong>Password: </strong></label><input type="password" name="password" id="password" required>
+        <br>
+        <input type="submit" value="Register" class="btn btn-primary">
+    </form>
+    <br>
+    <a href="/login">Already have an account? Login!</a>
+</div>
+
+
+{% endblock %}

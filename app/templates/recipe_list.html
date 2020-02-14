@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<!-- BootStrap CSS -->
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+<!-- Custom CSS -->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/recipes.css') }}" type="text/css">
+{% endblock %}
+
+{% block body %}
+<h1>Recipe List</h1>
+
+{% if recipes %}
+    <div class="flex-container">
+        {% for recipe in recipes %}
+            <div class="card">
+                <div class="card-header" style="text-align: center;"><strong>{{ recipe.title }}</strong></div>
+                <img class="card-img-bottom" src="{{ recipe.image }}" alt="recipe image">
+                <div class="card-footer"><a href="/single/{{ user_id }}/{{ recipe.id }}">More Details</a></div>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <h2>There are no recipes</h2>
+{% endif %}
+
+{% endblock %}
