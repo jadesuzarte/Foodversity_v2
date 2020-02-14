@@ -41,11 +41,9 @@
                 <input type="hidden" name="recipe_gluten_free" value="{{ recipe.glutenFree }}">
                 <input type="hidden" name="recipe_dairy_free" value="{{ recipe.dairyFree }}">
                 <input type="hidden" name="recipe_vegan" value="{{ recipe.vegan }}">
-                <input type="submit" value="Save Recipe">
+                <input type="submit" value="Save Recipe" class="btn btn-info">
             </form>
-            <form action="/profile/{{ user_id }}" method="GET">
-                <input type="submit" value="Return Home">
-            </form>
+            <a href="/profile/{{ user_id }}">Return Home</a>
         </div>
     </div>
 </div>
