@@ -170,7 +170,7 @@ def save(userid):
         new_recipe = Recipes(recipe_id=recipe_id, name=recipe_name, image=recipe_image, ingredients="", ready_in_mins=recipe_ready_in_mins, dairy=False, dairy_free=False, gluten_free=False, vegan=False, user_id=userid)
 
         # Checks if the recipe exists
-        existing_recipe = Recipes.query.filter_by(recipe_id=recipe_id, user_id=userid).one()
+        existing_recipe = Recipes.query.filter_by(recipe_id=recipe_id, user_id=userid).first()
             
         if existing_recipe:
             error = "You've already saved this recipe ({})".format(recipe_name)
