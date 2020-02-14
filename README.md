@@ -56,3 +56,12 @@ More styling
 Friday:
 Test
 Presentation slides 
+
+## Challenges & Solutions
+| Challenges        | Solutions          
+| ------------- |-------------:| 
+| Combining React & Flask. | Abandoned the React approach for the plain HTML & CSS one. |
+| Communicating with the SQLite database. | Flask-SQLAlchemy documentation |
+| Spoonacular API had unexpected loopholes (e.g. some recipes had no instructions).  | Adapted by informing users that instructions weren’t provided by the author. |
+| Searching for recipes had to take an appropriate format for the API calls | Regular expression (regex) to split all words by non-letters, and join those words with comma-and-space. |
+| Running out of API daily points to make API calls. | Upgraded to a Starter account to gain 150 points per day. |
