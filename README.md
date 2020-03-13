@@ -1,6 +1,14 @@
 # Foodversity-v2
 This final project is carried out by Yusaf and Jade. This project focuses on the development of a HTML and CSS application (served by Flask) that produces a list of recipes based on given ingredients. It was designed to help those who have random ingredients in their homes, don't want to waste food, but don't know what to cook with them. All they need to do is register in Foodversity and type in their ingredients in order to get a list of delicious recipes that contain them.   
 
+## The website 
+![homepage](images/readme/homepage.png)
+![login](images/readme/login.png)
+![profile page](images/readme/profile_page.png)
+![recipes list](images/readme/recipes_list.png)
+![single recipe](images/readme/single_recipe.png)
+
+
 ## Technologies
 - HTML 
 - CSS

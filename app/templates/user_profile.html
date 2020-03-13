@@ -8,7 +8,7 @@
 {% endblock %}
 
 {% block body %}
-    <h1>Welcome to <span>Foodversity, </span>{{ username }}</h1>
+    <h1>Welcome {{ username }}</h1>
     <div>
         <form action="/get_recipes/{{ user_id }}" method="GET">
             <input type="text" name="ingredients" id="ingredients" placeholder="Write your ingredients here...">
